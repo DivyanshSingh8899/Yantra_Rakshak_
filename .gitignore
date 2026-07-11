@@ -16,6 +16,7 @@ firmware/YantraRakshak/sketch/build/
 backend/.venv/
 simulation/.venv/
 frontend/node_modules/
+frontend/dist/
 *.log
 database/*.db
 

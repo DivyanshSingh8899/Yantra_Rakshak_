@@ -87,6 +87,13 @@ Both modes publish the **identical JSON schema** to the **identical MQTT topics*
 - **Summary**: Established the living project log per user's standing instruction.
 - **Reason**: User instructed that all future work must keep this file up to date, appended to, and read before starting new tasks.
 
+### 2026-07-11 — Frontend UI/UX overhaul: charts, fleet heatmap, dark mode, Hardware Setup page
+- **Files modified**: added `recharts` dependency; `tailwind.config.js` (`darkMode: "media"` → `"class"`); added `src/hooks/useDarkMode.js`, `src/components/common/ThemeToggle.jsx`, `src/components/charts/{TrendLineChart,Sparkline,HealthMeter,FleetHeatmap}.jsx`, `src/components/machines/MachineDetailModal.jsx`, `src/data/wiringData.js`, `src/pages/HardwareSetup.jsx`; rewrote `src/App.jsx` (tab nav + theme toggle), `src/pages/Dashboard.jsx` (fleet heatmap + click-through modal), `src/components/alerts/MachineCard.jsx` (clickable, hover states, embedded sparkline), `src/components/common/StatTile.jsx` (accent colors); added `@keyframes fadeIn` to `src/index.css`; added root `.claude/launch.json` dev-server config (project root is outside the primary working directory, so the config lives at `D:\Internship\Portfolio\.claude\launch.json` instead).
+- **Summary**: Implemented the three previously-pending chart components (`TrendLineChart`, `HealthMeter`, `FleetHeatmap`) plus a `Sparkline` for machine cards, all reading real data from the existing `/machines/{id}/telemetry` endpoint — no backend changes needed. Added a manual dark/light theme toggle (persisted in `localStorage`, defaults to system preference) and a tabbed nav (`Dashboard` / `Hardware Setup`). Built a new interactive `HardwareSetup` page: a hand-laid-out SVG wiring diagram (UNO Q ↔ MPU6050 ↔ RGB LED) driven by `src/data/wiringData.js` (sourced from `docs/WIRING_DIAGRAM.md`), with hoverable/clickable wires that highlight and show connection details, plus a synced accessible table fallback. MachineCard/FleetHeatmap clicks open a `MachineDetailModal` with a live-polling trend chart + health gauge.
+- **Verified live**: reused the already-running backend/simulation from an earlier session (still serving real `Lathe-01`/`Motor-01`/`Motor-02` data) — its MQTT broker had gone stale, so a fresh `amqtt` broker was started, which caused the existing backend and simulation processes to auto-reconnect and resume publishing in real time. Restarted the Vite dev server (a stale pre-existing instance hadn't picked up the `darkMode: "class"` Tailwind config change). Confirmed via the Browser pane: dashboard renders KPI tiles, fleet heatmap, machine cards with sparklines, and a live alert feed against real data; clicking a heatmap cell/card opens the detail modal with a working `HealthMeter` gauge; theme toggle correctly flips `dark` class + `localStorage` and repaints; Hardware Setup page renders the wiring diagram correctly in both themes, wire click/hover correctly surfaces connection details and highlights the matching pin-reference table row. No console errors.
+- **Reason**: User requested improved, more interactive UI/UX, "reliable graphs," and a way to see the complete Arduino hardware setup in the dashboard — this was scoped down via clarifying questions to: (1) per-machine trend + fleet health overview charts, and (2) an interactive wiring-diagram page, both confirmed by the user as the recommended options.
+- **Pending from this work**: `Sparkline` fetches telemetry per-card on mount without a shared cache or polling refresh — fine at current fleet sizes (single digits) but would need batching/caching if the fleet grows large. Machine Details/Alert History/Recommendations/Analytics/Settings pages from the original design are still not implemented (only the inline `MachineDetailModal` exists so far).
+
 ### 2026-07-11 — Pushed to GitHub (github.com/DivyanshSingh8899/Yantra_Rakshak_)
 - **Files modified**: `.gitignore` (added `.venv/`, `node_modules/`, `*.log`, `database/*.db`); `README.md` (rewritten — the pre-existing one was a corrupted UTF-16 placeholder); deleted stray root `node_modules/` and four dev-session `.log` files (not deliverables); no other files changed (first real commit of everything already documented above).
 - **Summary**: User provided the GitHub URL `https://github.com/DivyanshSingh8899/Yantra_Rakshak_.git`. Discovered the local repo's existing `origin` remote pointed at a *misspelled* repo (`Yantra_Raskhak_`) with only one prior commit (a garbled README, no real project files). Per user's choice, updated `origin` to the correctly-spelled URL, cleaned up non-deliverable artifacts, committed the entire project (firmware, ML pipeline + trained model files, backend, frontend, simulation module, all docs, `PROJECT_PROGRESS.md`, `config.yaml`), fetched first to confirm no conflicting history on the remote, then pushed `main` — a clean fast-forward, not a forced overwrite.
@@ -133,20 +140,22 @@ Both modes publish the **identical JSON schema** to the **identical MQTT topics*
 
 **Stack**: React 18 + Vite + Tailwind CSS.
 
-**Completed pages**: `Dashboard.jsx` — KPI row (Total Machines/Online/Active Alerts/Fleet Health), machine grid, live alert feed (WebSocket-driven).
+**Completed pages**: `Dashboard.jsx` — KPI row (Total Machines/Online/Active Alerts/Fleet Health), fleet heatmap, machine grid (click-through to detail modal), live alert feed (WebSocket-driven). `HardwareSetup.jsx` — interactive SVG wiring diagram (UNO Q ↔ MPU6050 ↔ RGB LED) with hover/click connection details and a synced pin-reference table.
 
 **Completed components**:
-- `components/common/StatTile.jsx`, `StatusBadge.jsx`
-- `components/alerts/MachineCard.jsx`, `AlertFeedItem.jsx`
+- `components/common/StatTile.jsx` (accent colors), `StatusBadge.jsx`, `ThemeToggle.jsx`
+- `components/alerts/MachineCard.jsx` (clickable, hover states, embedded sparkline), `AlertFeedItem.jsx`
+- `components/charts/TrendLineChart.jsx`, `Sparkline.jsx`, `HealthMeter.jsx`, `FleetHeatmap.jsx`
+- `components/machines/MachineDetailModal.jsx` — gauge + trend chart + status detail, opened from a machine card or heatmap cell
 - `components/simulation/SimulationControlPanel.jsx` — Start/Pause/Resume, machine ID/type selectors, scenario selector, speed slider, inject-fault buttons (talks directly to the simulation control API on :8001, not the main backend)
 
 **Services**: `services/api.js` (REST client), `services/websocket.js` (auto-reconnecting WS client)
 
-**Charts/animations**: none yet — out of scope for this minimal pass.
+**Charts/animations**: `recharts`-based `TrendLineChart` (per-machine anomaly-score history with warning/critical reference lines) and `Sparkline` (compact card-embedded trend), both against `/machines/{id}/telemetry`; hand-built SVG `HealthMeter` gauge; `FleetHeatmap` status grid. Manual dark/light theme toggle (`useDarkMode` hook, `localStorage`-persisted, system-preference default).
 
-**Pending work**: Machine Details, Alert History, Recommendations, Analytics, Settings pages (designed earlier in chat, not yet implemented as code); chart components (TrendLineChart, HealthMeter, Heatmap per the original dashboard design); dark-mode toggle; table-view accessibility twin for the alert feed.
+**Pending work**: Machine Details, Alert History, Recommendations, Analytics, Settings pages (designed earlier in chat, not yet implemented as code — `MachineDetailModal` covers a subset of "Machine Details" inline); table-view accessibility twin for the alert feed; `Sparkline`'s per-card telemetry fetch has no shared cache — revisit if the fleet grows large.
 
-**Status**: Completed (minimal scope). Verified running and rendering correctly via a live Playwright screenshot during this session.
+**Status**: Completed (minimal scope + chart/theming/hardware-setup pass). Verified running and rendering correctly via live Browser-pane testing during this session (including interactive gauge, heatmap, modal, theme toggle, and wiring-diagram hover/click).
 
 ---
 
@@ -232,11 +241,13 @@ Both modes publish the **identical JSON schema** to the **identical MQTT topics*
 - [x] Simulation Control Panel (frontend)
 - [x] End-to-end live verification (broker + backend + simulation + frontend, screenshotted)
 - [x] `PROJECT_PROGRESS.md` established
+- [x] Chart components (TrendLineChart, HealthMeter, FleetHeatmap) per original dashboard design
+- [x] Dark mode toggle (accessibility table-view twin for alert feed still pending)
+- [x] Interactive Arduino UNO Q hardware-setup/wiring-diagram page
 - [ ] Migrate `@app.on_event` to FastAPI `lifespan` handlers (backend + simulation)
-- [ ] Machine Details, Alert History, Recommendations, Analytics, Settings pages (frontend)
-- [ ] Chart components (TrendLineChart, HealthMeter, Heatmap) per original dashboard design
+- [ ] Alert History, Recommendations, Analytics, Settings pages (frontend) — Machine Details partially covered by `MachineDetailModal`
 - [ ] `machine_thresholds` table + per-machine configurable warning/critical thresholds via API
-- [ ] Dark mode + accessibility table-view twin for alert feed
+- [ ] Accessibility table-view twin for the live alert feed
 - [ ] Flash real Arduino UNO Q hardware once available; verify live `Arduino_RouterBridge` round-trip
 - [ ] Recalibrate ML thresholds against real MPU6050-collected data (on-site dataset collection)
 - [ ] Verify Ollama-backed recommendation quality with a real running Ollama instance
@@ -390,3 +401,4 @@ Then propagate new `calibration.json` values into `SignalProcessor.cpp`, `Config
 - **2026-07-11**: Added Software Simulation Mode per explicit requirement to leave firmware/TinyML/MQTT-schema/DB-schema untouched. Discovered backend/frontend didn't exist as code yet; built a minimal-but-real FastAPI backend and React frontend first, then the full `simulation/` module (`IDataSource` + `ArduinoDataSource` + `MachineSimulatorDataSource`, 4 machine profiles × 7 fault scenarios, gradual fault ramping, MQTT publisher matching the firmware's JSON schema exactly). Added root `config.yaml` as the single mode switch. Ran the entire stack live (broker, backend, simulation control API, frontend), injected a real fault, and screenshotted the dashboard showing correct real-time escalation. Added `docs/SIMULATION_MODE.md`.
 - **2026-07-11**: Established `PROJECT_PROGRESS.md` as the standing living project log per explicit user instruction; updated `.gitignore` to exclude local venvs, node_modules, log files, and the runtime SQLite database.
 - **2026-07-11**: Fixed the git remote (was pointed at a misspelled `Yantra_Raskhak_` repo with no real content) to `https://github.com/DivyanshSingh8899/Yantra_Rakshak_.git`; replaced the corrupted placeholder `README.md`; cleaned up non-deliverable dev artifacts; committed and pushed the entire project — first time the full codebase (firmware, ML pipeline, backend, frontend, simulation) is live on GitHub.
+- **2026-07-11**: Frontend UI/UX pass — added `recharts`-based `TrendLineChart`/`Sparkline`, a hand-built SVG `HealthMeter` gauge, and a `FleetHeatmap`, all wired to the existing telemetry API; added a persisted dark/light theme toggle; added a new interactive `HardwareSetup` page (SVG wiring diagram for UNO Q + MPU6050 + RGB LED, hover/click-to-inspect, synced pin-reference table) driven by `src/data/wiringData.js`; made machine cards/heatmap cells open a `MachineDetailModal`. Verified live end-to-end in the Browser pane against the project's already-running backend/simulation (revived a stalled MQTT connection by restarting the broker) — no console errors, both themes and all new interactions confirmed working.
