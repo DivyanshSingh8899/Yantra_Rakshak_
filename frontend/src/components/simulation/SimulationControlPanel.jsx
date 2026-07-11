@@ -114,12 +114,16 @@ export default function SimulationControlPanel() {
         <label className="text-xs text-[#898781]">
           Scenario
           <select
-            className="mt-1 w-full rounded border border-black/10 dark:border-white/10 bg-transparent p-2 text-sm"
+            className={`mt-1 w-full rounded border bg-transparent p-2 text-sm font-medium ${
+              scenario === "healthy"
+                ? "border-status-good/40 text-status-good"
+                : "border-status-critical/40 text-status-critical"
+            }`}
             value={scenario}
             onChange={(e) => setScenario(e.target.value)}
           >
             {SCENARIOS.map((s) => (
-              <option key={s} value={s}>
+              <option key={s} value={s} style={{ color: s === "healthy" ? "#0ca30c" : "#d03b3b" }}>
                 {s.replace("_", " ")}
               </option>
             ))}
