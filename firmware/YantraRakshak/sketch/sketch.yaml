@@ -1,0 +1,13 @@
+# Arduino CLI sketch project file. Confirmed format and FQBN against
+# shawnhymel.com/3074/how-to-use-the-command-line-cli-with-the-arduino-uno-q
+# (see docs/ARDUINO_UNO_Q_API_VERIFICATION.md for the full source list).
+profiles:
+  default:
+    fqbn: arduino:zephyr:unoq
+    platforms:
+      - platform: arduino:zephyr
+    libraries:
+      - Adafruit MPU6050
+      - Adafruit Unified Sensor
+      - Adafruit BusIO
+      - Arduino_RouterBridge

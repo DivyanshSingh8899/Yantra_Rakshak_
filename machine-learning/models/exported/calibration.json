@@ -1,0 +1,39 @@
+{
+  "feature_count": 5,
+  "feature_names": [
+    "mean",
+    "rms",
+    "peak",
+    "crest_factor",
+    "kurtosis"
+  ],
+  "feature_mean": [
+    0.01248929277062416,
+    0.03596297279000282,
+    0.09797009080648422,
+    2.727405071258545,
+    -0.20431967079639435
+  ],
+  "feature_std": [
+    0.0019481847994029522,
+    0.003015594556927681,
+    0.013204914517700672,
+    0.31797054409980774,
+    0.364741712808609
+  ],
+  "warning_threshold": 1.777191400527954,
+  "critical_threshold": 2.9144086837768555,
+  "window_size": 128,
+  "deployed_sample_rate_hz": 500,
+  "training_source": "CWRU Bearing Data Center (real, downloaded): 97,98,99,100 (normal), 105,118 (fault, validation only)",
+  "normal_val_error_mean": 0.6399741768836975,
+  "normal_val_error_std": 0.5686086416244507,
+  "fault_error_mean": 17.650470733642578,
+  "fault_detection_rate_at_warning_threshold": 1.0,
+  "normal_false_positive_rate_at_warning_threshold": 0.07228915662650602,
+  "quantized_model_size_bytes": 3264,
+  "quantized_input_scale": 0.024671168997883797,
+  "quantized_input_zero_point": -2,
+  "quantized_output_scale": 0.014543704688549042,
+  "quantized_output_zero_point": -85
+}

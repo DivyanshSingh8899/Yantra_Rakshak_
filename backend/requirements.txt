@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+paho-mqtt
+pydantic
+python-dotenv
+pyyaml
+httpx
+websockets

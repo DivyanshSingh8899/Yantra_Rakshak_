@@ -1,0 +1,24 @@
+# Local ML/build tooling used to develop and verify this project -- not
+# deliverables, regenerable via docs/BUILD_INSTRUCTIONS.md.
+ml_env/
+tools/
+__pycache__/
+*.pyc
+
+# Raw downloaded dataset files (regenerable via the URLs in
+# docs/MODEL_TRAINING_REPORT.md; kept out of version control due to size).
+machine-learning/datasets/raw/
+
+# Arduino compile output
+firmware/YantraRakshak/sketch/build/
+
+# Backend/frontend/simulation local dev artifacts
+backend/.venv/
+simulation/.venv/
+frontend/node_modules/
+*.log
+database/*.db
+
+# Local scratch used only for screenshot verification during development
+screenshot.js
+dashboard_screenshot.png

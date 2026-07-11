@@ -1,0 +1,21 @@
+# Arduino UNO Q app descriptor. The overall project layout (app.yaml at
+# the root, a sketch/ folder for the MCU/Zephyr side, a python/ folder for
+# the Qualcomm Linux/MPU side) is confirmed against official Arduino UNO Q
+# tutorials. The exact key schema below (bricks/type/path/main) was NOT
+# found verbatim in the fetched documentation -- it is a best-effort
+# reconstruction. Confirm/regenerate this file against Arduino App Lab
+# (which scaffolds a real app.yaml for you) or docs.arduino.cc/tutorials/
+# uno-q/user-manual before relying on it.
+
+name: yantra-rakshak
+description: Offline predictive-maintenance monitor -- vibration anomaly detection (MCU) with MQTT publishing (Linux/Python)
+
+bricks:
+  - name: sketch
+    type: sketch
+    path: sketch
+
+  - name: python
+    type: python
+    path: python
+    main: main.py

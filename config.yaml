@@ -1,0 +1,40 @@
+# YantraRakshak — single-switch mode configuration.
+#
+# This is the ONLY value that determines whether the system runs against
+# real Arduino UNO Q hardware or the software simulator. Changing `mode`
+# requires no code changes anywhere in backend/, frontend/, or simulation/ —
+# every module reads this file (or is told its value) rather than
+# hardcoding a mode.
+#
+# mode: hardware   -> simulation/main.py stays passive; real hardware
+#                     (firmware/YantraRakshak) publishes MQTT directly.
+# mode: simulation -> simulation/main.py runs the Machine Simulator, which
+#                     publishes the exact same MQTT JSON schema.
+mode: simulation
+
+mqtt:
+  broker_host: "localhost"
+  broker_port: 1883
+
+database:
+  path: "./database/yantrarakshak.db"
+
+llm:
+  ollama_host: "http://localhost:11434"
+  model: "llama3.1:8b"
+
+# Only consulted by simulation/config.py -- ignored by the backend and by
+# real hardware mode.
+simulation:
+  default_machine_type: "electric_motor"
+  default_scenario: "healthy"
+  default_speed_multiplier: 1.0
+  machines:
+    - machine_id: "Lathe-01"
+      machine_type: "lathe"
+    - machine_id: "Pump-01"
+      machine_type: "water_pump"
+    - machine_id: "Compressor-01"
+      machine_type: "air_compressor"
+    - machine_id: "Motor-01"
+      machine_type: "electric_motor"

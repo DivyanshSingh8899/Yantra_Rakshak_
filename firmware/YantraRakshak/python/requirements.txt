@@ -1,0 +1,8 @@
+# Prefer tflite-runtime (small, ARM-Linux wheels commonly available on SBC
+# distros); main.py falls back to tensorflow's bundled tf.lite if
+# tflite-runtime is not installable on the target Debian image -- confirm
+# which is actually available on the UNO Q's Python environment.
+tflite-runtime; platform_machine != "x86_64"
+tensorflow; platform_machine == "x86_64"
+numpy
+paho-mqtt
