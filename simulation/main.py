@@ -34,6 +34,10 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    # Lets a public HTTPS origin (e.g. the Vercel-deployed frontend) call this
+    # localhost-bound API -- Chrome's Private Network Access checks block
+    # that preflight otherwise ("Disallowed CORS private-network").
+    allow_private_network=True,
 )
 
 
