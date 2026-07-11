@@ -87,6 +87,11 @@ Both modes publish the **identical JSON schema** to the **identical MQTT topics*
 - **Summary**: Established the living project log per user's standing instruction.
 - **Reason**: User instructed that all future work must keep this file up to date, appended to, and read before starting new tasks.
 
+### 2026-07-11 — Pushed to GitHub (github.com/DivyanshSingh8899/Yantra_Rakshak_)
+- **Files modified**: `.gitignore` (added `.venv/`, `node_modules/`, `*.log`, `database/*.db`); `README.md` (rewritten — the pre-existing one was a corrupted UTF-16 placeholder); deleted stray root `node_modules/` and four dev-session `.log` files (not deliverables); no other files changed (first real commit of everything already documented above).
+- **Summary**: User provided the GitHub URL `https://github.com/DivyanshSingh8899/Yantra_Rakshak_.git`. Discovered the local repo's existing `origin` remote pointed at a *misspelled* repo (`Yantra_Raskhak_`) with only one prior commit (a garbled README, no real project files). Per user's choice, updated `origin` to the correctly-spelled URL, cleaned up non-deliverable artifacts, committed the entire project (firmware, ML pipeline + trained model files, backend, frontend, simulation module, all docs, `PROJECT_PROGRESS.md`, `config.yaml`), fetched first to confirm no conflicting history on the remote, then pushed `main` — a clean fast-forward, not a forced overwrite.
+- **Reason**: User wants the project's canonical home on GitHub at the correct repo name; explicit confirmation was sought (and given) before changing the remote and pushing, since both are shared/visible actions.
+
 ---
 
 ## 4. Backend Progress
@@ -202,7 +207,8 @@ Both modes publish the **identical JSON schema** to the **identical MQTT topics*
 - **PlatformIO unsupported**: confirmed via an open GitHub issue against `platformio/platform-ststm32` — Arduino CLI is the only supported build path for this board.
 - **FastAPI `@app.on_event` deprecation warnings**: both `backend/app/main.py` and `simulation/main.py` use the deprecated `on_event` startup/shutdown hooks (functional, but FastAPI recommends `lifespan` handlers going forward). Not yet migrated.
 - **No physical hardware tested**: everything under "Hardware Progress" beyond compilation is unverified pending the board's arrival.
-- **Runtime dev artifacts present in the working tree**: `backend.log`, `frontend.log`, `mqtt_broker.log`, `simulation.log`, `database/yantrarakshak.db` were created while verifying the app runs live in this session. Added to `.gitignore`; safe to delete locally.
+- ~~**Runtime dev artifacts present in the working tree**~~ — **RESOLVED 2026-07-11**: `backend.log`, `frontend.log`, `mqtt_broker.log`, `simulation.log`, and a stray root-level `node_modules/` (from a one-off Playwright screenshot check) were deleted; `.gitignore` extended to cover `.venv/`, `node_modules/`, `*.log`, and `database/*.db` going forward.
+- **Repo's original README.md was corrupted**: the pre-existing repo had a UTF-16-encoded, garbled `README.md` (`# Yantra_Raskhak_` with mangled bytes, from the original misspelled-repo scaffold). Replaced with a proper UTF-8 README pointing to `PROJECT_PROGRESS.md` and `docs/`.
 
 ---
 
@@ -383,3 +389,4 @@ Then propagate new `calibration.json` values into `SignalProcessor.cpp`, `Config
 - **2026-07-11**: Resolved two integration blockers with real work: (a) verified every Arduino UNO Q API against official documentation and live compile testing, correcting the architecture to split MCU (sensing) vs. Python/Linux (inference + MQTT); (b) downloaded real CWRU Bearing Data Center data, trained and quantized a real autoencoder, generated real `model_data.cpp`/`.h`, and achieved a real successful `arduino-cli` compile. Added `docs/ARDUINO_UNO_Q_API_VERIFICATION.md`, `docs/MODEL_TRAINING_REPORT.md`, `docs/COMPILE_VERIFICATION.md`, `docs/PYTHON_VERIFICATION.md`, `docs/VALIDATION_REPORT.md`.
 - **2026-07-11**: Added Software Simulation Mode per explicit requirement to leave firmware/TinyML/MQTT-schema/DB-schema untouched. Discovered backend/frontend didn't exist as code yet; built a minimal-but-real FastAPI backend and React frontend first, then the full `simulation/` module (`IDataSource` + `ArduinoDataSource` + `MachineSimulatorDataSource`, 4 machine profiles × 7 fault scenarios, gradual fault ramping, MQTT publisher matching the firmware's JSON schema exactly). Added root `config.yaml` as the single mode switch. Ran the entire stack live (broker, backend, simulation control API, frontend), injected a real fault, and screenshotted the dashboard showing correct real-time escalation. Added `docs/SIMULATION_MODE.md`.
 - **2026-07-11**: Established `PROJECT_PROGRESS.md` as the standing living project log per explicit user instruction; updated `.gitignore` to exclude local venvs, node_modules, log files, and the runtime SQLite database.
+- **2026-07-11**: Fixed the git remote (was pointed at a misspelled `Yantra_Raskhak_` repo with no real content) to `https://github.com/DivyanshSingh8899/Yantra_Rakshak_.git`; replaced the corrupted placeholder `README.md`; cleaned up non-deliverable dev artifacts; committed and pushed the entire project — first time the full codebase (firmware, ML pipeline, backend, frontend, simulation) is live on GitHub.
