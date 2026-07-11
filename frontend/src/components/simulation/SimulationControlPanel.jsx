@@ -12,6 +12,11 @@ const SCENARIOS = [
   "overheating",
   "critical_failure",
 ];
+// The backend only understands the specific fault names above -- there's no
+// "unhealthy" scenario server-side. The Scenario selector below simplifies
+// to a healthy/unhealthy choice for the user; picking "unhealthy" randomly
+// selects one of these specific faults when the simulation starts.
+const FAULT_SCENARIOS = SCENARIOS.filter((s) => s !== "healthy");
 
 async function simRequest(path, options = {}) {
   const response = await fetch(`${SIM_API_BASE_URL}${path}`, {
@@ -33,7 +38,7 @@ export default function SimulationControlPanel() {
   const [state, setState] = useState(null);
   const [machineId, setMachineId] = useState("Motor-01");
   const [machineType, setMachineType] = useState(MACHINE_TYPES[0]);
-  const [scenario, setScenario] = useState(SCENARIOS[0]);
+  const [scenario, setScenario] = useState("healthy");
   const [speed, setSpeed] = useState(1.0);
   const [error, setError] = useState(null);
 
@@ -49,11 +54,14 @@ export default function SimulationControlPanel() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleStart = () =>
-    simRequest("/simulation/start", {
+  const handleStart = () => {
+    const actualScenario =
+      scenario === "healthy" ? "healthy" : FAULT_SCENARIOS[Math.floor(Math.random() * FAULT_SCENARIOS.length)];
+    return simRequest("/simulation/start", {
       method: "POST",
-      body: JSON.stringify({ machine_id: machineId, machine_type: machineType, scenario }),
+      body: JSON.stringify({ machine_id: machineId, machine_type: machineType, scenario: actualScenario }),
     }).then(refreshState).catch((e) => setError(e.message));
+  };
 
   const handlePause = () =>
     simRequest("/simulation/pause", { method: "POST" }).then(refreshState).catch((e) => setError(e.message));
@@ -122,11 +130,12 @@ export default function SimulationControlPanel() {
             value={scenario}
             onChange={(e) => setScenario(e.target.value)}
           >
-            {SCENARIOS.map((s) => (
-              <option key={s} value={s} style={{ color: s === "healthy" ? "#0ca30c" : "#d03b3b" }}>
-                {s.replace("_", " ")}
-              </option>
-            ))}
+            <option value="healthy" style={{ color: "#0ca30c" }}>
+              Healthy
+            </option>
+            <option value="unhealthy" style={{ color: "#d03b3b" }}>
+              Unhealthy
+            </option>
           </select>
         </label>
       </div>
@@ -159,7 +168,7 @@ export default function SimulationControlPanel() {
       <div>
         <div className="text-xs text-[#898781] mb-1">Inject fault immediately</div>
         <div className="flex flex-wrap gap-2">
-          {SCENARIOS.filter((s) => s !== "healthy").map((s) => (
+          {FAULT_SCENARIOS.map((s) => (
             <button
               key={s}
               onClick={() => handleInjectFault(s)}
